@@ -45,7 +45,7 @@ def update():
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
     with cd('/etc/puppet'):
-        sudo('librarian-puppet install --path /etc/puppet/vendor --verbose')
+        sudo('librarian-puppet install --path /etc/puppet/vendor')
 
     put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
     
