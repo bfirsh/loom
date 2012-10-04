@@ -12,7 +12,7 @@ def all():
     """
     env.hosts = []
     for hosts in env.roledefs.values():
-        env.hosts.extend(env.hosts)
+        env.hosts.extend(hosts)
     # remove dupes
     env.hosts = list(set(env.hosts))
 

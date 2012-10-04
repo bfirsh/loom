@@ -3,7 +3,7 @@ from fabric.contrib.project import rsync_project
 from StringIO import StringIO
 from .config import current_role
 
-__all__ = ['update', 'install_master', 'install_agent', 'apply']
+__all__ = ['update', 'install_master', 'install_agent', 'apply', 'force']
 
 env.puppet_conf = """
 [main]
@@ -24,6 +24,9 @@ ssl_client_header = SSL_CLIENT_S_DN
 ssl_client_verify_header = SSL_CLIENT_VERIFY
 
 """
+
+def get_puppetmaster_host():
+    return env.get('puppetmaster_host', env.roledefs['puppetmaster'][0])
 
 @task
 def update():
@@ -76,7 +79,7 @@ START=yes
 DAEMON_OPTS="--server %(server)s --environment %(environment)s"
 export FACTER_role="%(role)s"
 """ % {
-        'server': env.get('puppetmaster_host', env.roledefs['puppetmaster'][0]),
+        'server': get_puppetmaster_host(),
         'environment': env.environment,
         'role': current_role(),
     }
@@ -91,6 +94,12 @@ def apply():
     """
     sudo('HOME=/root FACTER_role=%s puppet apply --modulepath=/etc/puppet/vendor:/etc/puppet/modules /etc/puppet/manifests/site.pp' % current_role())
 
+@task
+def force():
+    """
+    Force puppet agent run
+    """
+    sudo('HOME=/root FACTER_role=%s puppet agent --onetime --no-daemonize --server %s' % (current_role(), get_puppetmaster_host()))
 
 
 
