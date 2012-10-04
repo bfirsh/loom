@@ -1,0 +1,41 @@
+from fabric.api import *
+import subprocess
+
+from .config import host_role, current_role
+
+__all__ = ['ssh', 'all', 'uptime', 'upgrade']
+
+@task
+def all():
+    """
+    Select all hosts
+    """
+    env.hosts = []
+    for hosts in env.roledefs.values():
+        env.hosts.extend(env.hosts)
+    # remove dupes
+    env.hosts = list(set(env.hosts))
+
+@task
+def uptime():
+    run('uptime')
+
+@task
+def upgrade():
+    """
+    Upgrade apt packages
+    """
+    with settings(hide('stdout'), show('running')):
+        sudo('apt-get update')
+    sudo("apt-get upgrade -y")
+
+@task
+def ssh(*cmd):
+    """
+    Open an interactive ssh session
+    """
+    run = ["ssh", "-A", "-t", "-i", "epio.pem", '%s@%s' % (env.user, env.host_string)]
+    run += cmd
+    subprocess.call(run)
+
+
