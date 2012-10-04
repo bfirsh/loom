@@ -1,29 +1,14 @@
 from fabric.api import *
-from fabric.contrib.project import rsync_project
+from fabric.contrib.files import upload_template
 from StringIO import StringIO
+import os
 from .config import current_role
+from .tasks import restart
+from .utils import upload_dir
 
 __all__ = ['update', 'install_master', 'install_agent', 'apply', 'force']
 
-env.puppet_conf = """
-[main]
-logdir=/var/log/puppet
-vardir=/var/lib/puppet
-ssldir=/var/lib/puppet/ssl
-rundir=/var/run/puppet
-factpath=$vardir/lib/facter
-templatedir=$confdir/templates
-prerun_command=/etc/puppet/etckeeper-commit-pre
-postrun_command=/etc/puppet/etckeeper-commit-post
-modulepath=/etc/puppet/modules:/etc/puppet/vendor
-
-[master]
-# These are needed when the puppetmaster is run by passenger
-# and can safely be removed if webrick is used.
-ssl_client_header = SSL_CLIENT_S_DN 
-ssl_client_verify_header = SSL_CLIENT_VERIFY
-
-"""
+files_path = os.path.join(os.path.dirname(__file__), 'files')
 
 def get_puppetmaster_host():
     return env.get('puppetmaster_host', env.roledefs['puppetmaster'][0])
@@ -34,14 +19,7 @@ def update():
     Upload puppet modules and manifests
     """
     # Install local modules
-    rsync_project(
-        local_dir="modules/",
-        remote_dir="/etc/puppet/modules",
-        delete=True,
-        extra_opts='--rsync-path="sudo rsync" --exclude=".git*" --copy-links',
-        ssh_opts='-oStrictHostKeyChecking=no'
-    )
-
+    upload_dir('modules/', '/etc/puppet/modules', use_sudo=True)
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
     with cd('/etc/puppet'):
@@ -55,16 +33,10 @@ def install_master():
     """
     Install puppetmaster, update its modules and install agent.
     """
-    # librarian-puppet depends on git
-    with settings(hide('stdout'), show('running')):
-        sudo('apt-get update')
-    sudo('apt-get -y install puppetmaster rubygems git')
-    # TODO: this installs a later version of puppet than the system version
-    # which might cause trouble.
-    sudo('gem install librarian-puppet --no-ri --no-rdoc')
-    put(StringIO(env.puppet_conf), '/etc/puppet/puppet.conf', use_sudo=True)
-    execute(update)
     execute(install_agent)
+    execute(update)
+    put(os.path.join(files_path, 'init/puppetmaster.conf'), '/etc/init/puppetmaster.conf', use_sudo=True)
+    restart('puppetmaster')
 
 @task
 def install_agent():
@@ -73,33 +45,37 @@ def install_agent():
     """
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
-    sudo('apt-get -y install puppet')
-    defaults = """
-START=yes
-DAEMON_OPTS="--server %(server)s --environment %(environment)s"
-export FACTER_role="%(role)s"
-""" % {
+    sudo('apt-get -y install rubygems git')
+    # librarian-puppet does not yet support 3.0.0
+    # https://github.com/rodjek/librarian-puppet/pull/37
+    sudo('gem install puppet -v 2.7.19 --no-ri --no-rdoc')
+    sudo('gem install librarian-puppet -v 0.9.6 --no-ri --no-rdoc')
+    # http://docs.puppetlabs.com/guides/installation.html
+    sudo('puppet resource group puppet ensure=present')
+    sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
+    sudo('mkdir -p /etc/puppet')
+    put(StringIO(current_role()), '/etc/puppet/role', use_sudo=True)
+    upload_template(os.path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
         'server': get_puppetmaster_host(),
         'environment': env.environment,
-        'role': current_role(),
-    }
-    put(StringIO(env.puppet_conf), '/etc/puppet/puppet.conf', use_sudo=True)
-    put(StringIO(defaults), '/etc/default/puppet', use_sudo=True)
-    sudo('/etc/init.d/puppet restart')
+    }, use_sudo=True)
+    put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
+    put(os.path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
+    restart('puppet')
 
 @task
 def apply():
     """
     Apply puppet locally
     """
-    sudo('HOME=/root FACTER_role=%s puppet apply --modulepath=/etc/puppet/vendor:/etc/puppet/modules /etc/puppet/manifests/site.pp' % current_role())
+    sudo('HOME=/root FACTER_role=%s puppet apply /etc/puppet/manifests/site.pp' % current_role())
 
 @task
 def force():
     """
     Force puppet agent run
     """
-    sudo('HOME=/root FACTER_role=%s puppet agent --onetime --no-daemonize --server %s' % (current_role(), get_puppetmaster_host()))
+    sudo('HOME=/root FACTER_role=%s puppet agent --onetime --no-daemonize --verbose' % (current_role(), get_puppetmaster_host()))
 
 
 

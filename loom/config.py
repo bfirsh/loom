@@ -6,7 +6,7 @@ from StringIO import StringIO
 env.user = 'ubuntu'
 
 # Default puppet environment
-env.app = 'prod'
+env.environment = 'prod'
 
 def host_role(host_string):
     """

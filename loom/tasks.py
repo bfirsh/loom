@@ -38,4 +38,12 @@ def ssh(*cmd):
     run += cmd
     subprocess.call(run)
 
+def restart(service):
+    """
+    Restart or start an upstart service
+    """
+    with settings(warn_only=True):
+        result = sudo('restart %s' % service)
+    if result.failed:
+        sudo('start %s' % service)
 
