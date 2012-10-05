@@ -34,10 +34,14 @@ def ssh(*cmd):
     """
     Open an interactive ssh session
     """
-    run = ["ssh", "-A", "-t", "-i", "epio.pem", '%s@%s' % (env.user, env.host_string)]
+    run = ['ssh', '-A', '-t']
+    if env.key_filename:
+        run.extend(["-i", env.key_filename])
+    run.append('%s@%s' % (env.user, env.host_string))
     run += cmd
     subprocess.call(run)
 
+@task
 def restart(service):
     """
     Restart or start an upstart service
