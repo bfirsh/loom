@@ -32,7 +32,7 @@ You can then define any third-party Puppet modules you want in a file called `Pu
     mod "puppetlabs/nodejs"
     mod "puppetlabs/mysql"
 
-(This is for [librarian-puppet](https://http://librarian-puppet.com/), a tool for installing reusable Puppet modules. It can also install from Git, etc.)
+(This is for [librarian-puppet](http://librarian-puppet.com/), a tool for installing reusable Puppet modules. It can also install from Git, etc.)
 
 Your own modules are put in a directory called `modules/` in the same directory as `fabfile.py`. Roles are defined in a magic module called `roles` which contains manifests for each role. (If you've used Puppet before, this is a replacement for `node` definitions.)
 
