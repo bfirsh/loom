@@ -49,12 +49,17 @@ Then you can install third party Puppet modules, upload your local modules, and 
 
     $ fab -R db puppet.update puppet.apply
 
-Every time you make a change to your modules, you can run that command to apply them. Because this is just Fabric, you can write a task in `fabfile.py` to that too:
+Every time you make a change to your modules, you can run that command to apply them. Because this is just Fabric, you can write a task in `fabfile.py` to do it too:
 
     @task
     def deploy_puppet():
         execute(puppet.update)
         execute(puppet.apply)
+
+Then you could use the included "all" task to run it on all hosts:
+
+    $ fab all deploy_puppet
+
 
 OS support
 ----------
