@@ -1,9 +1,9 @@
 Loom
 ====
 
-Elegant deployment with Fabric and Puppet.
+Elegant deployment with [Fabric](http://fabfile.org) and Puppet.
 
-Loom does the stuff Puppet doesn't do well or at all: bootstrapping machines, giving them roles, deploying Puppet code and installing third party Puppet modules. It's useful for both serverless and master/agent Puppet installations.
+Loom does the stuff Puppet doesn't do well or at all: bootstrapping machines, giving them roles, deploying Puppet code and installing reusable Puppet modules. It's useful for both serverless and master/agent Puppet installations.
 
 Install
 -------
@@ -32,7 +32,11 @@ You can then define any third-party Puppet modules you want in a file called `Pu
     mod "puppetlabs/nodejs"
     mod "puppetlabs/mysql"
 
-Local modules are put in a directory called `modules/` in the same directory as `fabfile.py`. Roles are defined in a magic module called `roles`, which contains manifests for each role. For example, `modules/roles/manifests/db.pp`:
+(This is for [librarian-puppet](https://github.com/rodjek/librarian-puppet), a tool for installing reusable Puppet modules. It can also install from Git etc - take a look at its website for more info.)
+
+Your own modules are put in a directory called `modules/` in the same directory as `fabfile.py`. Roles are defined in a magic module called `roles` which contains manifests for each role. (If you've used Puppet before, this is a replacement for `node` definitions.)
+
+For example, `modules/roles/manifests/db.pp` defines what the db role is:
 
     class roles::db {
       include mysql
@@ -41,11 +45,11 @@ Local modules are put in a directory called `modules/` in the same directory as 
 
 And that's it!
 
-Let's set up a database server. First, bootstrap a host (in this example, the single host you defined in `env.roledefs`):
+Let's set up a database server. First, bootstrap the host (in this example, the single db host you defined in `env.roledefs`):
 
     $ fab -R db puppet.install
 
-Then you can install third party Puppet modules, upload your local modules, and apply them:
+Then install third party Puppet modules, upload your local modules, and apply them:
 
     $ fab -R db puppet.update puppet.apply
 
@@ -56,7 +60,7 @@ Every time you make a change to your modules, you can run that command to apply 
         execute(puppet.update)
         execute(puppet.apply)
 
-Then you could use the included "all" task to run it on all hosts:
+Then you could use the included "all" task to update Puppet on all your hosts:
 
     $ fab all deploy_puppet
 
