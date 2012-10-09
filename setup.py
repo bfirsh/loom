@@ -6,17 +6,12 @@ from setuptools import setup
 setup(
     name='loom',
     version='0.0.1',
-    description='',
-    author='',
-    author_email='',
+    description='Elegant deployment with Fabric and Puppet.',
+    author='Ben Firshman',
+    author_email='ben@firshman.co.uk',
     url='http://github.com/bfirsh/loom',
-    packages = [
-        'loom'
-    ],
-    package_data = {},
-    include_package_data=True,
+    packages = ['loom'],
     install_requires = open('requirements.txt').readlines(),
-    entry_points={},
     #test_suite = 'nose.collector',
 )
 
