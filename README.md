@@ -3,7 +3,7 @@ Loom
 
 Elegant deployment with Fabric and Puppet.
 
-Loom fills the gaps that Puppet doesn't fill: bootstrapping machines, giving them roles, deploying Puppet code and installing third party Puppet modules. It's useful for both serverless and master/agent Puppet installations.
+Loom does the stuff Puppet doesn't do well or at all: bootstrapping machines, giving them roles, deploying Puppet code and installing third party Puppet modules. It's useful for both serverless and master/agent Puppet installations.
 
 Install
 -------
