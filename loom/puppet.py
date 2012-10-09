@@ -6,12 +6,15 @@ from .config import current_role
 from .tasks import restart
 from .utils import upload_dir
 
-__all__ = ['update', 'install_master', 'install_agent', 'apply', 'force']
+__all__ = ['update', 'install', 'install_master', 'install_agent', 'apply', 'force']
 
 files_path = os.path.join(os.path.dirname(__file__), 'files')
 
 def get_puppetmaster_host():
-    return env.get('puppetmaster_host', env.roledefs['puppetmaster'][0])
+    if env.get('puppetmaster_host'):
+        return env['puppetmaster_host']
+    if 'puppetmaster' in env.roledefs and env.roledefs['puppetmaster']:
+        return env.roledefs['puppetmaster'][0]
 
 @task
 def update():
@@ -38,7 +41,7 @@ def update_configs():
 
     # Upload Puppet configs
     upload_template(os.path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
-        'server': get_puppetmaster_host(),
+        'server': get_puppetmaster_host() or '',
         'environment': env.environment,
     }, use_sudo=True)
     put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
@@ -49,18 +52,9 @@ def update_configs():
 
 
 @task
-def install_master():
+def install():
     """
-    Install puppetmaster, update its modules and install agent.
-    """
-    execute(install_agent)
-    put(os.path.join(files_path, 'init/puppetmaster.conf'), '/etc/init/puppetmaster.conf', use_sudo=True)
-    restart('puppetmaster')
-
-@task
-def install_agent():
-    """
-    Install the puppet agent.
+    Install Puppet and its configs without any agent or master.
     """
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
@@ -72,10 +66,26 @@ def install_agent():
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
-    put(os.path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
     sudo('mkdir -p /etc/puppet')
     execute(update_configs)
+
+@task
+def install_master():
+    """
+    Install puppetmaster, update its modules and install agent.
+    """
+    execute(install_agent)
     execute(update)
+    put(os.path.join(files_path, 'init/puppetmaster.conf'), '/etc/init/puppetmaster.conf', use_sudo=True)
+    restart('puppetmaster')
+
+@task
+def install_agent():
+    """
+    Install the puppet agent.
+    """
+    execute(install_puppet)
+    put(os.path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
     restart('puppet')
 
 @task
