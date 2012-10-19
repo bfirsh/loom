@@ -11,6 +11,7 @@ setup(
     author_email='ben@firshman.co.uk',
     url='http://github.com/bfirsh/loom',
     packages = ['loom'],
+    package_data = {'loom': ['files/init/*', 'files/puppet/*']},
     install_requires = open('requirements.txt').readlines(),
     #test_suite = 'nose.collector',
 )
