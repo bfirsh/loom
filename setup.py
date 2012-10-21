@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='loom',
-    version='0.0.3',
+    version='0.0.4',
     description='Elegant deployment with Fabric and Puppet.',
     author='Ben Firshman',
     author_email='ben@firshman.co.uk',
