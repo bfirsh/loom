@@ -6,7 +6,7 @@ from .config import current_role
 from .tasks import restart
 from .utils import upload_dir
 
-__all__ = ['update', 'install', 'install_master', 'install_agent', 'apply', 'force']
+__all__ = ['update', 'update_configs', 'install', 'install_master', 'install_agent', 'apply', 'force']
 
 files_path = os.path.join(os.path.dirname(__file__), 'files')
 
