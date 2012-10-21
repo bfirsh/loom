@@ -84,7 +84,7 @@ def install_agent():
     """
     Install the puppet agent.
     """
-    execute(install_puppet)
+    execute(install)
     put(os.path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
     restart('puppet')
 
