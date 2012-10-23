@@ -23,6 +23,7 @@ def update():
     """
     # Install local modules
     upload_dir('modules/', '/etc/puppet/modules', use_sudo=True)
+    execute(manifests)
 
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
@@ -45,11 +46,17 @@ def update_configs():
         'environment': env.environment,
     }, use_sudo=True)
     put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
+    execute(manifests)
 
-    # Install manifest
-    sudo('mkdir -p /etc/puppet/manifests')
-    put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
-
+@task
+def manifests():
+    # If manifests/site.pp exists, sync that as well
+    if os.path.exists('manifests/site.pp') and os.path.isfile('manifests/site.pp'):
+        upload_dir('manifests/', '/etc/puppet/manifests', use_sudo=True)
+    else:
+        # Install manifest
+        sudo('mkdir -p /etc/puppet/manifests')
+        put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
 
 @task
 def install():
@@ -67,7 +74,6 @@ def install():
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
     sudo('mkdir -p /etc/puppet')
-    execute(update_configs)
 
 @task
 def install_master():
