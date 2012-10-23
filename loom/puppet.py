@@ -51,7 +51,7 @@ def update_configs():
 
 @task
 def manifests():
- # If manifests/site.pp exists, sync that as well
+    # If manifests/site.pp exists, sync that as well
     if path.exists('manifests/site.pp') and path.isfile('manifests/site.pp'):
         upload_dir('manifests/', '/etc/puppet/manifests', use_sudo=True)
     else:
