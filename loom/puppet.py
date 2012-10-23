@@ -5,7 +5,6 @@ import os
 from .config import current_role
 from .tasks import restart
 from .utils import upload_dir
-from os import path
 
 __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_agent', 'apply', 'force']
 
@@ -52,7 +51,7 @@ def update_configs():
 @task
 def manifests():
     # If manifests/site.pp exists, sync that as well
-    if path.exists('manifests/site.pp') and path.isfile('manifests/site.pp'):
+    if os.path.exists('manifests/site.pp') and os.path.isfile('manifests/site.pp'):
         upload_dir('manifests/', '/etc/puppet/manifests', use_sudo=True)
     else:
         # Install manifest
@@ -75,7 +74,6 @@ def install():
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
     sudo('mkdir -p /etc/puppet')
-    execute(update_configs)
 
 @task
 def install_master():
