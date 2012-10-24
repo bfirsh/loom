@@ -21,21 +21,25 @@ def update():
     """
     Upload puppet modules
     """
-    # Install local modules
-    upload_dir('modules/', '/etc/puppet/modules', use_sudo=True)
+    # Install local modules, custom manifests, and heiradata
+    upload_dir('modules manifests hieradata', '/etc/puppet', use_sudo=True)
+
+    # Install default site.pp if custom doesn't exist
+    if not (os.path.exists('manifests/site.pp')) and not (os.path.isfile('manifests/site.pp')):
+        sudo('mkdir -p /etc/puppet/manifests')
+        put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
+
+    # hiera is installed by default in puppet 3.0
+    if os.path.exists('hiera.yaml') and os.path.isfile('hiera.yaml'):
+        put('hiera.yaml', '/etc/puppet/hiera.yaml')
+    # Install default hiera.yaml file
+    else:
+         put(os.path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
 
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
     with cd('/etc/puppet'):
         sudo('librarian-puppet install --path /etc/puppet/vendor')
-
-    # Install custom manifests if they exist
-    if os.path.exists('manifests/site.pp') and os.path.isfile('manifests/site.pp'):
-        upload_dir('manifests/', '/etc/puppet/manifests', use_sudo=True)
-    # Otherwise generate basic site.pp
-    else:
-        sudo('mkdir -p /etc/puppet/manifests')
-        put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
 
 @task
 def update_configs():
