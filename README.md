@@ -75,4 +75,8 @@ API
 
 Look at the source for now. It's all Fabric tasks, and they're pretty easy to read. (Sorry.)
 
-
+Contributors
+------------
+ * [Ben Firshman](https://fir.sh)
+ * [Andreas Jansson](http://andreas.jansson.me.uk/)
+ * [Steffen L. Norgren](http://github.com/xironix)
