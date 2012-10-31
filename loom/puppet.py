@@ -50,6 +50,8 @@ def update_configs():
     # Upload Puppet configs
     upload_template(os.path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
         'server': get_puppetmaster_host() or '',
+        'certname': get_puppetmaster_host() or '',
+        'dns_alt_names': get_puppetmaster_host() or '',
         'environment': env.environment,
     }, use_sudo=True)
     put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
