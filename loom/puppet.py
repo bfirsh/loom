@@ -48,7 +48,7 @@ def update_configs():
     put(StringIO(current_role()), '/etc/puppet/role', use_sudo=True)
 
     # Allow the puppet master to automatically sign certificates
-    if env.get('loom_autosign') == 'true':
+    if env.get('loom_autosign'):
         put(StringIO('*'), '/etc/puppet/autosign.conf', use_sudo=True)
     else:
         put(StringIO(''), '/etc/puppet/autosign.conf', use_sudo=True)
