@@ -47,9 +47,17 @@ def update_configs():
     # working
     put(StringIO(current_role()), '/etc/puppet/role', use_sudo=True)
 
+    # Allow the puppet master to automatically sign certificates
+    if env.get('loom_autosign'):
+        put(StringIO('*'), '/etc/puppet/autosign.conf', use_sudo=True)
+    else:
+        put(StringIO(''), '/etc/puppet/autosign.conf', use_sudo=True)
+
     # Upload Puppet configs
     upload_template(os.path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
         'server': get_puppetmaster_host() or '',
+        'certname': get_puppetmaster_host() or '',
+        'dns_alt_names': get_puppetmaster_host() or '',
         'environment': env.environment,
     }, use_sudo=True)
     put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
