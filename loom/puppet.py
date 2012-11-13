@@ -21,19 +21,16 @@ def update():
     """
     Upload puppet modules
     """
-    # Install local modules
-    upload_dir('modules/', '/etc/puppet/modules', use_sudo=True)
+    # Install local modules and manifests
+    upload_dir('modules manifests', '/etc/puppet', use_sudo=True)
 
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
     with cd('/etc/puppet'):
         sudo('librarian-puppet install --path /etc/puppet/vendor')
 
-    # Install custom manifests if they exist
-    if os.path.exists('manifests/site.pp') and os.path.isfile('manifests/site.pp'):
-        upload_dir('manifests/', '/etc/puppet/manifests', use_sudo=True)
-    # Otherwise generate basic site.pp
-    else:
+    # If site.pp doesn't exist, create a basic one
+    if not path.exists('manifests/site.pp') and path.isfile('manifests/site.pp'):
         sudo('mkdir -p /etc/puppet/manifests')
         put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
 
