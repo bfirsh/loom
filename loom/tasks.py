@@ -16,8 +16,8 @@ def all():
     Select all hosts
     """
     env.hosts = []
-    for hosts in env.roledefs.values():
-        env.hosts.extend(hosts)
+    for hosts in env.loom.roledefs.values():
+        env.loom.hosts.extend(hosts)
     # remove dupes
     env.hosts = list(set(env.hosts))
 
@@ -36,7 +36,7 @@ def ssh(*cmd):
     run = ['ssh', '-A', '-t']
     if env.key_filename:
         run.extend(["-i", env.key_filename])
-    run.append('%s@%s' % (env.user, env.host_string))
+    run.append('%s@%s' % (env.loom.user, env.host_string))
     run += cmd
     subprocess.call(run)
 

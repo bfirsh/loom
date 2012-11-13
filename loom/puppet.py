@@ -11,10 +11,10 @@ __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_age
 files_path = path.join(path.dirname(__file__), 'files')
 
 def get_puppetmaster_host():
-    if env.get('puppetmaster_host'):
-        return env['puppetmaster_host']
-    if 'puppetmaster' in env.roledefs and env.roledefs['puppetmaster']:
-        return env.roledefs['puppetmaster'][0]
+    if env.loom.puppet.master.get('host'):
+        return env.loom.puppet.master['host']
+    if 'puppetmaster' in env.loom.roledefs and env.loom.roledefs['puppetmaster']:
+        return env.loom.roledefs['puppetmaster'][0]
 
 @task
 def update():
@@ -48,7 +48,7 @@ def update_configs():
     put(StringIO(current_role()), '/etc/puppet/role', use_sudo=True)
 
     # Allow the puppet master to automatically sign certificates
-    if env.get('loom_puppet_autosign'):
+    if env.loom.puppet.get('autosign'):
         put(StringIO('*'), '/etc/puppet/autosign.conf', use_sudo=True)
     else:
         put(StringIO(''), '/etc/puppet/autosign.conf', use_sudo=True)
@@ -70,10 +70,19 @@ def install():
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
     sudo('apt-get -y install rubygems git')
-    # librarian-puppet does not yet support 3.0.0
-    # https://github.com/rodjek/librarian-puppet/pull/37
-    sudo('gem install puppet -v 2.7.19 --no-ri --no-rdoc')
-    sudo('gem install librarian-puppet -v 0.9.6 --no-ri --no-rdoc')
+
+    # Allow specific versions
+    if env.loom.puppet.get('version'):
+        puppet_vercmd = '-v ' + env.loom.puppet.get('version')
+    else:
+        puppet_verion = None
+    if env.loom.librarian.get('version'):
+        librarian_vercmd = '-v ' + env.loom.librarian.get('version')
+    else:
+        librarian_version = None
+
+    sudo('gem install puppet ' + puppet_vercmd + ' --no-ri --no-rdoc')
+    sudo('gem install librarian-puppet ' + librarian_vercmd + ' --no-ri --no-rdoc')
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
@@ -112,6 +121,4 @@ def force():
     Force puppet agent run
     """
     sudo('HOME=/root FACTER_role=%s puppet agent --onetime --no-daemonize --verbose --waitforcert 5' % current_role())
-
-
 

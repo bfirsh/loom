@@ -3,7 +3,7 @@ import json
 from StringIO import StringIO
 
 # Default system user
-env.user = 'ubuntu'
+env.loom.user = 'ubuntu'
 
 # Default puppet environment
 env.environment = 'prod'
@@ -12,7 +12,7 @@ def host_role(host_string):
     """
     Returns the role of a given host string.
     """
-    for role, hosts in env.roledefs.items():
+    for role, hosts in env.loom.roledefs.items():
         if host_string in hosts:
             return role
 
