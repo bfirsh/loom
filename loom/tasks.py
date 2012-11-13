@@ -1,9 +1,14 @@
 from fabric.api import *
+from .utils import detect_os
+import ubuntu, freebsd
 import subprocess
 
 from .config import host_role, current_role
 
-__all__ = ['ssh', 'all', 'uptime', 'upgrade', 'restart']
+# This class contains tasks that are common to all
+# operating systems.
+
+__all__ = ['ssh', 'all', 'uptime', 'upgrade', 'service']
 
 @task
 def all():
@@ -18,16 +23,10 @@ def all():
 
 @task
 def uptime():
+    """
+    Display the uptime of a given host
+    """
     run('uptime')
-
-@task
-def upgrade():
-    """
-    Upgrade apt packages
-    """
-    with settings(hide('stdout'), show('running')):
-        sudo('apt-get update')
-    sudo("apt-get upgrade -y")
 
 @task
 def ssh(*cmd):
@@ -42,12 +41,23 @@ def ssh(*cmd):
     subprocess.call(run)
 
 @task
-def restart(service):
+def upgrade():
     """
-    Restart or start an upstart service
+    Update & upgrade installed packages.
     """
-    with settings(warn_only=True):
-        result = sudo('restart %s' % service)
-    if result.failed:
-        sudo('start %s' % service)
+    osname = detect_os()
+    if osname in 'Ubuntu':
+        ubuntu.upgrade()
+    elif osname in 'FreeBSD':
+        freebsd.upgrade()
 
+@task
+def service(name, command):
+    """
+    start, stop, or restart a service
+    """
+    osname = detect_os()
+    if osname in 'Ubuntu':
+        ubuntu.service(name, command)
+    elif osname in 'FreeBSD':
+        freebsd.service(name, command)
