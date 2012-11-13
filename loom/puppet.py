@@ -1,14 +1,14 @@
 from fabric.api import *
 from fabric.contrib.files import upload_template
 from StringIO import StringIO
-import os
+from os import path
 from .config import current_role
-from .tasks import restart
 from .utils import upload_dir
+import ubuntu, freebsd
 
 __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_agent', 'apply', 'force']
 
-files_path = os.path.join(os.path.dirname(__file__), 'files')
+files_path = path.join(path.dirname(__file__), 'files')
 
 def get_puppetmaster_host():
     if env.get('puppetmaster_host'):
@@ -88,7 +88,7 @@ def install_master():
     execute(install_agent)
     execute(update)
     put(os.path.join(files_path, 'init/puppetmaster.conf'), '/etc/init/puppetmaster.conf', use_sudo=True)
-    restart('puppetmaster')
+    service('puppetmaster', 'restart')
 
 @task
 def install_agent():
@@ -97,7 +97,7 @@ def install_agent():
     """
     execute(install)
     put(os.path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
-    restart('puppet')
+    service('puppet', 'restart')
 
 @task
 def apply():
