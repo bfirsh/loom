@@ -11,10 +11,10 @@ __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_age
 files_path = path.join(path.dirname(__file__), 'files')
 
 def get_puppetmaster_host():
-    if env.loom.puppet.master.get('host'):
-        return env.loom.puppet.master['host']
-    if 'puppetmaster' in env.loom.roledefs and env.loom.roledefs['puppetmaster']:
-        return env.loom.roledefs['puppetmaster'][0]
+    if env.get('puppetmaster_host'):
+        return env['puppetmaster_host']
+    if 'puppetmaster' in env.roledefs and env.roledefs['puppetmaster']:
+        return env.roledefs['puppetmaster'][0]
 
 @task
 def update():
@@ -45,7 +45,7 @@ def update_configs():
     put(StringIO(current_role()), '/etc/puppet/role', use_sudo=True)
 
     # Allow the puppet master to automatically sign certificates
-    if env.loom.puppet.get('autosign'):
+    if env.get('loom_puppet_autosign'):
         put(StringIO('*'), '/etc/puppet/autosign.conf', use_sudo=True)
     else:
         put(StringIO(''), '/etc/puppet/autosign.conf', use_sudo=True)
@@ -69,12 +69,12 @@ def install():
     sudo('apt-get -y install rubygems git')
 
     # Allow specific versions
-    if env.loom.puppet.get('version'):
-        puppet_vercmd = '-v ' + env.loom.puppet.get('version')
+    if env.get('loom_puppet_version'):
+        puppet_vercmd = '-v ' + env.get('loom_puppet_version')
     else:
         puppet_verion = None
-    if env.loom.librarian.get('version'):
-        librarian_vercmd = '-v ' + env.loom.librarian.get('version')
+    if env.get('loom_librarian_version'):
+        librarian_vercmd = '-v ' + env.get('loom_librarian_version')
     else:
         librarian_version = None
 
