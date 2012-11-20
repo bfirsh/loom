@@ -54,7 +54,7 @@ def upgrade():
 @task
 def service(name, command):
     """
-    start, stop, or restart a service
+    Manage a service in the form of service:"nginx, restart"
     """
     osname = detect_os()
     if osname in 'Ubuntu':
