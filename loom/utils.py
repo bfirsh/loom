@@ -45,9 +45,9 @@ def detect_os():
         with settings(hide('stdout'), show('running')):
             system = run('python -c "import platform; print platform.system()"')
 
-        if not system in 'FreeBSD':
+        if system != 'FreeBSD':
             # System is not supported.
             abort(DETECTION_ERROR_MESSAGE)
-        elif system is 'FreeBSD':
+        elif system == 'FreeBSD':
             return system
 

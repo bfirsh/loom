@@ -46,9 +46,9 @@ def upgrade():
     Update & upgrade installed packages.
     """
     osname = detect_os()
-    if osname in 'Ubuntu':
+    if osname == 'Ubuntu':
         ubuntu.upgrade()
-    elif osname in 'FreeBSD':
+    elif osname == 'FreeBSD':
         freebsd.upgrade()
 
 @task
@@ -57,7 +57,7 @@ def service(name, command):
     Manage a service in the form of service:"nginx, restart"
     """
     osname = detect_os()
-    if osname in 'Ubuntu':
+    if osname == 'Ubuntu':
         ubuntu.service(name, command)
-    elif osname in 'FreeBSD':
+    elif osname == 'FreeBSD':
         freebsd.service(name, command)
