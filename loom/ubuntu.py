@@ -9,7 +9,7 @@ def upgrade():
 
 def service(name, command):
     with settings(warn_only=True):
-        result = sudo('service %s %s' % name % command)
+        result = sudo('service %s %s' % (name, command))
     if result.failed:
-        puts('Service %s failed to %s.' % name %command)
+        puts('Service %s failed to %s.' % (name, command))
 
