@@ -29,11 +29,6 @@ def update():
     with cd('/etc/puppet'):
         sudo('librarian-puppet install --path /etc/puppet/vendor')
 
-    # If site.pp doesn't exist, create a basic one
-    if not path.exists('manifests/site.pp') and path.isfile('manifests/site.pp'):
-        sudo('mkdir -p /etc/puppet/manifests')
-        put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
-
 @task
 def update_configs():
     """
@@ -49,6 +44,11 @@ def update_configs():
         put(StringIO('*'), '/etc/puppet/autosign.conf', use_sudo=True)
     else:
         put(StringIO(''), '/etc/puppet/autosign.conf', use_sudo=True)
+
+    # If site.pp doesn't exist, create a basic one
+    if not path.exists('manifests/site.pp') and not path.isfile('manifests/site.pp'):
+        sudo('mkdir -p /etc/puppet/manifests')
+        put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
 
     # Upload Puppet configs
     upload_template(os.path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
