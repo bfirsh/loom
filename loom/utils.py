@@ -34,19 +34,18 @@ def detect_os():
     Determine the node's operating system
     """
 
-    # Determine system type
+    # We're assuming that 90% of systems will be linux, thus to improve
+    # efficiency, we'll test for that first.
     with settings(hide('stdout'), show('running')):
-        system = run('python -c "import platform; print platform.system()"')
+        distro = run('python -c "import platform; print platform.linux_distribution()"')
 
-    if not system in ['Linux', 'FreeBSD']:
-        abort(DETECTION_ERROR_MESSAGE)
-    elif system is 'FreeBSD':
-        return system
+    if eval(distro)[0] in 'Ubuntu':
+        return eval(distro)[0]
     else:
-        with settings(hide('stdout'), show('running')):
-            distro = run('python -c "import platform; print platform.linux_distribution()"')
-        if eval(distro)[0] in 'Ubuntu':
-            return eval(distro)[0]
-        else:
+        # Given a failure to detect Ubuntu, we'll test for FreeBSD
+        if not system in 'FreeBSD':
+            # System is not supported.
             abort(DETECTION_ERROR_MESSAGE)
+        elif system is 'FreeBSD':
+            return system
 
