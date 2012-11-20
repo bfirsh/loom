@@ -69,6 +69,10 @@ def update_configs():
     }, use_sudo=True)
     put(path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
 
+    # Upload default heira.yaml if one doesn't exist.
+    if not path.isfile('hiera.yaml'):
+        put(path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
+
 @task
 def install():
     """
