@@ -95,6 +95,7 @@ def install():
     sudo('gem install puppet ' + puppet_vercmd + ' --no-ri --no-rdoc')
     sudo('gem install librarian-puppet ' + librarian_vercmd + ' --no-ri --no-rdoc')
     # http://docs.puppetlabs.com/guides/installation.html
+    # TODO: For some reason this fails on the first pass...
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
     sudo('mkdir -p /etc/puppet')
