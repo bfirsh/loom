@@ -42,6 +42,9 @@ def detect_os():
         return eval(distro)[0]
     else:
         # Given a failure to detect Ubuntu, we'll test for FreeBSD
+        with settings(hide('stdout'), show('running')):
+            system = run('python -c "import platform; print platform.system()"')
+
         if not system in 'FreeBSD':
             # System is not supported.
             abort(DETECTION_ERROR_MESSAGE)
