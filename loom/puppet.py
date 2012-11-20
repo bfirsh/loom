@@ -86,11 +86,11 @@ def install():
     if env.get('loom_puppet_version'):
         puppet_vercmd = '-v ' + env.get('loom_puppet_version')
     else:
-        puppet_verion = None
+        puppet_vercmd = ''
     if env.get('loom_librarian_version'):
         librarian_vercmd = '-v ' + env.get('loom_librarian_version')
     else:
-        librarian_version = None
+        librarian_vercmd = ''
 
     sudo('gem install puppet ' + puppet_vercmd + ' --no-ri --no-rdoc')
     sudo('gem install librarian-puppet ' + librarian_vercmd + ' --no-ri --no-rdoc')
