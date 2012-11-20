@@ -61,13 +61,13 @@ def update_configs():
         put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
 
     # Upload Puppet configs
-    upload_template(os.path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
+    upload_template(path.join(files_path, 'puppet/puppet.conf'), '/etc/puppet/puppet.conf', {
         'server': get_puppetmaster_host() or '',
         'certname': get_puppetmaster_host() or '',
         'dns_alt_names': get_puppetmaster_host() or '',
         'environment': env.environment,
     }, use_sudo=True)
-    put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
+    put(path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
 
 @task
 def install():
@@ -103,7 +103,7 @@ def install_master():
     """
     execute(install_agent)
     execute(update)
-    put(os.path.join(files_path, 'init/puppetmaster.conf'), '/etc/init/puppetmaster.conf', use_sudo=True)
+    put(path.join(files_path, 'init/puppetmaster.conf'), '/etc/init/puppetmaster.conf', use_sudo=True)
     service('puppetmaster', 'restart')
 
 @task
@@ -112,7 +112,7 @@ def install_agent():
     Install the puppet agent.
     """
     execute(install)
-    put(os.path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
+    put(path.join(files_path, 'init/puppet.conf'), '/etc/init/puppet.conf', use_sudo=True)
     service('puppet', 'restart')
 
 @task
