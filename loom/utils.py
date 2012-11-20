@@ -33,7 +33,6 @@ def detect_os():
     """
     Determine the node's operating system
     """
-
     # We're assuming that 90% of systems will be linux, thus to improve
     # efficiency, we'll test for that first.
     with settings(hide('stdout'), show('running')):
