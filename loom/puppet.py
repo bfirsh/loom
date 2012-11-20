@@ -21,8 +21,18 @@ def update():
     """
     Upload puppet modules
     """
-    # Install local modules and manifests
-    upload_dir('modules manifests', '/etc/puppet', use_sudo=True)
+    # Install local modules, manifests, and hieradata, if any.
+    # Also making the assumption that modules will always exist.
+    if path.exists('modules') and path.exists('manifests') and path.exists('hieradata'):
+        upload_dir('modules manifests hieradata', '/etc/puppet', use_sudo=True)
+    elif path.exists('modules') and path.exists('manifests'):
+        upload_dir('modules manifests', '/etc/puppet', use_sudo=True)
+    elif path.exists('modules') and path.exists('hieradata'):
+        upload_dir('modules hieradata', '/etc/puppet', use_sudo=True)
+
+    # Upload custom hiera.yaml if it exists
+    if path.exists('hiera.yaml') and path.isfile('hiera.yaml'):
+        put('hiera.yaml', '/etc/puppet/hiera.yaml', use_sudo=True)
 
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
