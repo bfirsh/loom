@@ -8,15 +8,17 @@ env.user = 'ubuntu'
 # Default puppet environment
 env.environment = 'prod'
 
-def host_role(host_string):
+def host_roles(host_string):
     """
     Returns the role of a given host string.
     """
+    roles = []
     for role, hosts in env.roledefs.items():
-        if host_string in hosts:
-            return role
+        if host_string in hosts and role not in roles:
+            roles.append(role)
+    return roles
 
-def current_role():
-    return host_role(env.host_string)
+def current_roles():
+    return host_roles(env.host_string)
 
 

@@ -2,7 +2,7 @@ from fabric.api import *
 from fabric.contrib.files import upload_template
 from StringIO import StringIO
 import os
-from .config import current_role
+from .config import current_roles
 from .tasks import restart
 from .utils import upload_dir
 
@@ -16,11 +16,17 @@ def get_puppetmaster_host():
     if 'puppetmaster' in env.roledefs and env.roledefs['puppetmaster']:
         return env.roledefs['puppetmaster'][0]
 
+def generate_site_pp():
+    return ''.join('include "roles::%s"\n' % role for role in current_roles())
+
 @task
 def update():
     """
     Upload puppet modules
     """
+    if not current_roles():
+        abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
+
     # Install local modules
     upload_dir('modules/', '/etc/puppet/modules', use_sudo=True)
 
@@ -29,24 +35,16 @@ def update():
     with cd('/etc/puppet'):
         sudo('librarian-puppet install --path /etc/puppet/vendor')
 
-    # Install custom manifests if they exist
-    if os.path.exists('manifests/site.pp') and os.path.isfile('manifests/site.pp'):
-        upload_dir('manifests/', '/etc/puppet/manifests', use_sudo=True)
-    # Otherwise generate basic site.pp
-    else:
-        sudo('mkdir -p /etc/puppet/manifests')
-        put(StringIO('include "roles::$role"\n'), '/etc/puppet/manifests/site.pp', use_sudo=True)
+    # Install site.pp
+    sudo('mkdir -p /etc/puppet/manifests')
+    put(StringIO(generate_site_pp()), '/etc/puppet/manifests/site.pp', use_sudo=True)
 
 @task
 def update_configs():
     """
     Upload puppet configs and manifests
     """
-    # Set role
-    # TODO: this should be done with facts.d, but it was a pain in the arse to get it 
-    # working
-    put(StringIO(current_role()), '/etc/puppet/role', use_sudo=True)
-
+    sudo('mkdir -p /etc/puppet')
     # Allow the puppet master to automatically sign certificates
     if env.get('loom_puppet_autosign'):
         put(StringIO('*'), '/etc/puppet/autosign.conf', use_sudo=True)
@@ -77,7 +75,6 @@ def install():
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
-    sudo('mkdir -p /etc/puppet')
     execute(update_configs)
 
 @task
@@ -104,14 +101,14 @@ def apply():
     """
     Apply puppet locally
     """
-    sudo('HOME=/root FACTER_role=%s puppet apply /etc/puppet/manifests/site.pp' % current_role())
+    sudo('HOME=/root puppet apply /etc/puppet/manifests/site.pp')
 
 @task
 def force():
     """
     Force puppet agent run
     """
-    sudo('HOME=/root FACTER_role=%s puppet agent --onetime --no-daemonize --verbose --waitforcert 5' % current_role())
+    sudo('HOME=/root puppet agent --onetime --no-daemonize --verbose --waitforcert 5')
 
 
 
