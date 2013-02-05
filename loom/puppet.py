@@ -68,10 +68,15 @@ def install():
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
     sudo('apt-get -y install rubygems git')
-    # librarian-puppet does not yet support 3.0.0
-    # https://github.com/rodjek/librarian-puppet/pull/37
-    sudo('gem install puppet -v 2.7.19 --no-ri --no-rdoc')
-    sudo('gem install librarian-puppet -v 0.9.6 --no-ri --no-rdoc')
+    # Version support for puppet & librarian-puppet
+    if env.get('loom_puppet_version'):
+        sudo('gem install puppet -v ' + env.get('loom_puppet_version') + ' --no-ri --no-rdoc')
+    else:
+        sudo('gem install puppet --no-ri --no-rdoc')
+    if env.get('loom_librarian_version'):
+        sudo('gem install librarian-puppet -v ' + env.get('loom_librarian_version') + ' --no-ri --no-rdoc')
+    else:
+        sudo('gem install librarian-puppet --no-ri --no-rdoc')
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
