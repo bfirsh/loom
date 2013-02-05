@@ -1,8 +1,6 @@
 from fabric.api import *
 import subprocess
 
-from .config import host_role, current_role
-
 __all__ = ['ssh', 'all', 'uptime', 'upgrade', 'restart']
 
 @task
