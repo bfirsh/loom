@@ -59,6 +59,9 @@ def update_configs():
         'environment': env.environment,
     }, use_sudo=True)
     put(os.path.join(files_path, 'puppet/auth.conf'), '/etc/puppet/auth.conf', use_sudo=True)
+    if not env.get('loom_puppet_version'):
+        put(os.path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
+
 
 @task
 def install():
@@ -71,14 +74,16 @@ def install():
     # Version support for puppet & librarian-puppet
     if env.get('loom_puppet_version'):
         sudo('gem install puppet -v ' + env.get('loom_puppet_version') + ' --no-ri --no-rdoc')
-        # Default hiera.yaml for puppet >3.0
-        put(os.path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
     else:
         sudo('gem install puppet --no-ri --no-rdoc')
+        # Default hiera.yaml for puppet >3.0
+        put(os.path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
+
     if env.get('loom_librarian_version'):
         sudo('gem install librarian-puppet -v ' + env.get('loom_librarian_version') + ' --no-ri --no-rdoc')
     else:
         sudo('gem install librarian-puppet --no-ri --no-rdoc')
+
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
     sudo("puppet resource user puppet ensure=present gid=puppet shell='/sbin/nologin'")
