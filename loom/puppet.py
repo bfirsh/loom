@@ -71,6 +71,8 @@ def install():
     # Version support for puppet & librarian-puppet
     if env.get('loom_puppet_version'):
         sudo('gem install puppet -v ' + env.get('loom_puppet_version') + ' --no-ri --no-rdoc')
+        # Default hiera.yaml for puppet >3.0
+        put(os.path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
     else:
         sudo('gem install puppet --no-ri --no-rdoc')
     if env.get('loom_librarian_version'):
