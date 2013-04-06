@@ -24,5 +24,5 @@ def current_roles():
 
 def has_puppet_installed():
     with settings(hide('warnings', 'running', 'stdout', 'stderr'), warn_only=True):
-        result = run('dpkg-query -l "puppet" | grep -q ^.i')
+        result = run('which puppet')
     return result.succeeded
