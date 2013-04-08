@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
+from loom import __version__ as version
 
 setup(
     name='loom',
-    version='0.0.8',
+    version=version,
     description='Elegant deployment with Fabric and Puppet.',
     author='Ben Firshman',
     author_email='ben@firshman.co.uk',
@@ -15,4 +16,3 @@ setup(
     install_requires = open('requirements.txt').readlines(),
     #test_suite = 'nose.collector',
 )
-
