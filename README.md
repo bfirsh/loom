@@ -5,6 +5,8 @@ Elegant deployment with [Fabric](http://fabfile.org) and Puppet.
 
 Loom does the stuff Puppet doesn't do well or at all: bootstrapping machines, giving them roles, deploying Puppet code and installing reusable Puppet modules. It's useful for both serverless and master/agent Puppet installations.
 
+It also includes some Fabric tasks for something else that's difficult with Puppet: building and uploading code for apps.
+
 Install
 -------
 
@@ -63,6 +65,53 @@ Every time you make a change to your modules, you can run that command to apply 
 Then you could use the included "all" task to update Puppet on all your hosts:
 
     $ fab all deploy_puppet
+
+Apps
+----
+
+Loom includes a bunch of Fabric tasks for building and uploading code. It assumes you've set up a role for the app (e.g., "web"), and that role has all of the packages you require installed and an Upstart init script installed.
+
+The first step of the app deploy pulls code from a Git repository to your local machine and runs an optionary build script. It then uploads that code to all of the hosts in a role and restarts an Upstart script.
+
+Apps in Loom are configured using `env.apps`. It is a dictionary where the key is the name of the app and the value is a dictionary with these keys:
+
+  - **repo** (required): A Git URL of the repo that contains your app.
+  - **role** (required): The role that the app will be uploaded to.
+  - **build**: A script to run locally before uploading (e.g. to build static assets or install local dependencies).
+  - **init**: The name of the Upstart script to start/restart after uploading.
+
+You must also define a directory for your apps to live in with `env.app_root`.
+
+For example, suppose this was your `fabfile.py`:
+
+    from fabric.api import *
+    from loom import app, puppet
+    from loom.tasks import *
+
+    env.user = 'root'
+    env.environment = 'prod'
+    env.roledefs = {
+        'web': ['prod-app-1.example.com', 'prod-app-2.example.com'],
+        'db': ['prod-db-1.example.com'],
+    }
+    env.app_root = '/home/ubuntu'
+    env.apps['web'] = {
+        "repo": "https://user:pass@github.com/mycompany/mycompany-web.git",
+        "role": "web",
+        "build": "script/build",
+        "init": "web",
+    }
+
+You then need a `modules/roles/manifests/web.pp` that sets up `/etc/init/web.conf` to run a file in `/home/ubuntu/web`. You can then run:
+
+    $ fab app.deploy:web
+
+That will: 
+
+  1. Pull your GitHub repository locally.
+  2. Run `script/build`.
+  3. Upload your code to `/home/ubuntu/web` on both `prod-app-1.example.com` and `prod-app-2.example.com`.
+  4. Run `sudo restart web`.
 
 
 OS support
