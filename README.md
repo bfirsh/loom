@@ -69,9 +69,7 @@ Then you could use the included "all" task to update Puppet on all your hosts:
 Apps
 ----
 
-Loom includes a bunch of Fabric tasks for building and uploading code. It assumes you've set up a role for the app (e.g., "web"), and that role has all of the packages you require installed and an Upstart init script installed.
-
-The first step of the app deploy pulls code from a Git repository to your local machine and runs an optionary build script. It then uploads that code to all of the hosts in a role and restarts an Upstart script.
+Loom includes a bunch of Fabric tasks for building and uploading code. It assumes you've set up a role for the app (e.g., "web"), and that role has all of the packages you require and an Upstart init script to start the app.
 
 Apps in Loom are configured using `env.apps`. It is a dictionary where the key is the name of the app and the value is a dictionary with these keys:
 
