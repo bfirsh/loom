@@ -17,11 +17,15 @@ __all__ = ['deploy', 'build', 'upload']
 #
 # env.apps['api'] = {
 #   "repo": "https://user:pass@github.com/mycompany/mycompany-api.git",
+#   "root": "/apps"
 #   "role": "api",
 #   "build": "script/build",
 #   "init": "api",
 # }
 env.apps = {}
+
+# The directory that contains your apps
+env.app_root = '/home/ubuntu'
 
 @task
 def deploy(app, commit='origin/master'):
@@ -62,19 +66,23 @@ def upload(app):
     """
     Upload the code for an app and restart its init script
     """
+    symlink = os.path.join(env.app_root, app)
+    previous = os.path.join(env.app_root, app+'-previous')
+    current = os.path.join(env.app_root, app+'-current')
+
     # Remove previous code
-    sudo('rm -rf /home/editor/%s-previous' % app)
+    sudo('rm -rf "%s"' % previous)
 
     # Move current code to previous
-    if exists('/home/editor/%s-current' % app):
-        sudo('cp -al /home/editor/%s-current /home/editor/%s-previous' % (app, app))
-        sudo('ln -sfn /home/editor/%s-previous /home/editor/%s' % (app, app))
+    if exists(current):
+        sudo('cp -al "%s" "%s"' % (current, previous))
+        sudo('ln -sfn "%s" "%s"' % (previous, symlink))
 
     # Upload new code
-    upload_dir('build/%s/*' % app, '/home/editor/%s-current' % app, use_sudo=True)
+    upload_dir('build/%s/*' % app, current, use_sudo=True)
 
     # Swap!
-    sudo('ln -sfn /home/editor/%s-current /home/editor/%s' % (app, app))
+    sudo('ln -sfn "%s" "%s"' % (current, symlink))
 
     # Restart with upstart
     if env.apps[app].get('init'):
