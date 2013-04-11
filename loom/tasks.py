@@ -25,7 +25,7 @@ def upgrade():
     """
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
-    sudo("apt-get upgrade -y")
+    sudo("apt-get upgrade")
 
 @task
 def ssh(*cmd):
