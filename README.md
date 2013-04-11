@@ -24,7 +24,7 @@ First of all, you create `fabfile.py` and define your hosts:
     env.user = 'root'
     env.environment = 'prod'
     env.roledefs = {
-        'app': ['prod-app-1.example.com', 'prod-app-2.example.com'],
+        'app': ['prod-web-1.example.com', 'prod-web-2.example.com'],
         'db': ['prod-db-1.example.com'],
     }
 
