@@ -1,7 +1,7 @@
 from fabric.api import *
 import subprocess
 
-__all__ = ['ssh', 'all', 'uptime', 'upgrade', 'restart']
+__all__ = ['ssh', 'all', 'uptime', 'upgrade', 'restart', 'reboot']
 
 @task
 def all():
