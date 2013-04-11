@@ -31,7 +31,9 @@ def update():
         abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
 
     # Install local modules
-    upload_dir('modules/', '/etc/puppet/modules', use_sudo=True)
+    module_dir = env.get('puppet_module_dir', 'modules/')
+    if not module_dir.endswith('/'): module_dir+='/'
+    upload_dir(module_dir, '/etc/puppet/modules', use_sudo=True)
 
     # Install vendor modules
     put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
