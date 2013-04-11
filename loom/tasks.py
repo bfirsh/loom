@@ -49,3 +49,11 @@ def restart(service):
     if result.failed:
         sudo('start %s' % service)
 
+@task
+def reboot():
+    """
+    Reboot a server
+    """
+    run('reboot')
+
+
