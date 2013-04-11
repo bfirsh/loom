@@ -102,11 +102,13 @@ For example, suppose this was your `fabfile.py`:
         "init": "web",
     }
 
-You then need a `modules/roles/manifests/web.pp` that sets up `/etc/init/web.conf` to run a file in `/home/ubuntu/web`. You can then run:
+You then need a `modules/roles/manifests/web.pp` that sets up `/etc/init/web.conf` to run your app in `/home/ubuntu/web`.
+
+To deploy your app, run:
 
     $ fab app.deploy:web
 
-That will: 
+This will: 
 
   1. Pull your GitHub repository locally.
   2. Run `script/build`.
