@@ -8,6 +8,10 @@ env.user = 'ubuntu'
 # Default puppet environment
 env.environment = 'prod'
 
+# Default puppet module directory
+env.puppet_module_dir = 'modules/'
+
+
 def host_roles(host_string):
     """
     Returns the role of a given host string.
@@ -18,7 +22,6 @@ def host_roles(host_string):
             roles.append(role)
     return roles
 
+
 def current_roles():
     return host_roles(env.host_string)
-
-
