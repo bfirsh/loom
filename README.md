@@ -5,7 +5,7 @@ Elegant deployment with [Fabric](http://fabfile.org) and Puppet.
 
 Loom does the stuff Puppet doesn't do well or at all: bootstrapping machines, giving them roles, deploying Puppet code and installing reusable Puppet modules. It's useful for both serverless and master/agent Puppet installations.
 
-It also includes some Fabric tasks for something else that's difficult with Puppet: building and uploading code for apps.
+It also includes some Fabric tasks for building and uploading app code – something that is particularly complex to do with Puppet.
 
 Install
 -------
