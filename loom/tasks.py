@@ -52,8 +52,8 @@ def restart(service):
 @task
 def reboot():
     """
-    Reboot a server
+    Reboot a host
     """
-    run('reboot')
+    sudo('reboot')
 
 
