@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
-from loom import __version__ as version
-
 setup(
     name='loom',
-    version=version,
+    version='0.0.10',
     description='Elegant deployment with Fabric and Puppet.',
     author='Ben Firshman',
     author_email='ben@firshman.co.uk',
