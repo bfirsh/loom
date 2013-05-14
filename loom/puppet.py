@@ -8,8 +8,8 @@ from .utils import upload_dir
 
 __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_agent', 'apply', 'force']
 
-env.loom_puppet_version = '2.7.19'
-env.loom_librarian_version = '0.9.6'
+env.loom_puppet_version = '3.1.1'
+env.loom_librarian_version = '0.9.9'
 
 files_path = os.path.join(os.path.dirname(__file__), 'files')
 
