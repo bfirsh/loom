@@ -9,6 +9,12 @@ env.environment = 'prod'
 # Default puppet module directory
 env.puppet_module_dir = 'modules/'
 
+# Default puppet version
+env.loom_puppet_version = '3.1.1'
+
+# Default librarian version
+env.loom_librarian_version = '0.9.9'
+
 
 def host_roles(host_string):
     """
