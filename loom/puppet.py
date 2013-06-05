@@ -8,9 +8,6 @@ from .utils import upload_dir
 
 __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_agent', 'apply', 'force']
 
-env.loom_puppet_version = '3.1.1'
-env.loom_librarian_version = '0.9.9'
-
 files_path = os.path.join(os.path.dirname(__file__), 'files')
 
 
@@ -82,8 +79,16 @@ def install():
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
     sudo('apt-get -y install rubygems git')
-    sudo('gem install puppet -v %s --no-ri --no-rdoc' % env.get('loom_puppet_version'))
-    sudo('gem install librarian-puppet -v %s --no-ri --no-rdoc' % env.get('loom_librarian_version'))
+
+    def _gem_install(gem, version=None):
+        version = '-v {version}'.format(version=version) if version else ''
+        return 'gem install {gem} {version} --no-ri --no-rdoc'.format(gem=gem, version=version)
+
+    puppet_version = env.get('loom_puppet_version')
+    sudo(_gem_install('puppet', version=puppet_version))
+
+    librarian_version = env.get('loom_librarian_version')
+    sudo(_gem_install('librarian-puppet', version=librarian_version))
 
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
