@@ -9,6 +9,9 @@ env.environment = 'prod'
 # Default puppet module directory
 env.puppet_module_dir = 'modules/'
 
+# Default puppet base class to be included on all site.pp. Example: roles::base
+env.loom_puppet_base_class = None
+
 
 def host_roles(host_string):
     """
@@ -29,5 +32,3 @@ def has_puppet_installed():
     with settings(hide('warnings', 'running', 'stdout', 'stderr'), warn_only=True):
         result = run('which puppet')
     return result.succeeded
-
-
