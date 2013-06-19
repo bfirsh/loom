@@ -39,3 +39,7 @@ def has_puppet_installed():
     return result.succeeded
 
 
+def has_librarian_installed():
+    with settings(hide('warnings', 'running', 'stdout', 'stderr'), warn_only=True):
+        librarian = run('which librarian-puppet')
+    return librarian.succeeded
