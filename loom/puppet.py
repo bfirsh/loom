@@ -2,7 +2,7 @@ from fabric.api import env, abort, put, cd, sudo, task, settings, hide, show, ex
 from fabric.contrib.files import upload_template
 from StringIO import StringIO
 import os
-from .config import current_roles, has_puppet_installed
+from .config import current_roles, has_puppet_installed, has_librarian_installed
 from .tasks import restart
 from .utils import upload_dir
 
@@ -34,6 +34,8 @@ def update():
         abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
     if not has_puppet_installed():
         abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
+    if not has_librarian_installed():
+        abort('Host "%s" does not have librarian-puppet installed. Try "fab puppet.install".' % env.host_string)
 
     # Install local modules
     module_dir = env.get('puppet_module_dir', 'modules/')
