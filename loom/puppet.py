@@ -72,6 +72,9 @@ def update_configs():
     put(os.path.join(files_path, 'puppet/hiera.yaml'), '/etc/puppet/hiera.yaml', use_sudo=True)
 
 
+def _gem_install(gem, version=None):
+    version = '-v {version}'.format(version=version) if version else ''
+    return ' '.join('gem install {gem} {version} --no-ri --no-rdoc'.format(gem=gem, version=version).split())
 
 @task
 def install():
@@ -81,10 +84,6 @@ def install():
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
     sudo('apt-get -y install rubygems git')
-
-    def _gem_install(gem, version=None):
-        version = '-v {version}'.format(version=version) if version else ''
-        return 'gem install {gem} {version} --no-ri --no-rdoc'.format(gem=gem, version=version)
 
     puppet_version = env.get('loom_puppet_version')
     sudo(_gem_install('puppet', version=puppet_version))
