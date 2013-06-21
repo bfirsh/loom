@@ -22,11 +22,11 @@ def host_roles(host_string):
     """
     Returns the role of a given host string.
     """
-    roles = []
+    roles = set()
     for role, hosts in env.roledefs.items():
-        if host_string in hosts and role not in roles:
-            roles.append(role)
-    return roles
+        if host_string in hosts:
+            roles.add(role)
+    return list(roles)
 
 
 def current_roles():
