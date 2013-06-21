@@ -1,9 +1,12 @@
 from pspec import describe
-from loom.decorators import requires_puppet
+from loom.decorators import requires_puppet, REQUIRES_GEM
 from mock import patch
+from fabric.api import env
 
 
 with describe('requires_puppet'):
+
+    env.host_string = 'app.example.com'
 
     @patch('loom.decorators.has_librarian_installed')
     @patch('loom.decorators.has_puppet_installed')
@@ -26,7 +29,7 @@ with describe('requires_puppet'):
         requires_puppet(lambda: 1)()
 
         assert puppet_mock.called
-        assert " puppet" in abort_mock.call_args[0][0]
+        assert REQUIRES_GEM.format(host=env.host_string, gem='puppet') == abort_mock.call_args[0][0]
 
     @patch('loom.decorators.has_librarian_installed')
     @patch('loom.decorators.has_puppet_installed')
@@ -39,4 +42,4 @@ with describe('requires_puppet'):
 
         assert puppet_mock.called
         assert librarian_mock.called
-        assert "librarian-puppet" in abort_mock.call_args[0][0]
+        assert REQUIRES_GEM.format(host=env.host_string, gem='librarian-puppet') == abort_mock.call_args[0][0]
