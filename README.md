@@ -1,5 +1,6 @@
-Loom
+Loom 
 ====
+[![Build Status](https://travis-ci.org/bfirsh/loom.png?branch=master)](https://travis-ci.org/bfirsh/loom)
 
 Elegant deployment with [Fabric](http://fabfile.org) and Puppet.
 
