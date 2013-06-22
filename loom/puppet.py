@@ -3,6 +3,7 @@ from fabric.contrib.files import upload_template
 from StringIO import StringIO
 import os
 from .config import current_roles, has_puppet_installed, has_librarian_installed
+from .decorators import requires_puppet
 from .tasks import restart
 from .utils import upload_dir
 
@@ -23,16 +24,13 @@ def generate_site_pp():
 
 
 @task
+@requires_puppet
 def update():
     """
     Upload puppet modules
     """
     if not current_roles():
         abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
-    if not has_puppet_installed():
-        abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
-    if not has_librarian_installed():
-        abort('Host "%s" does not have librarian-puppet installed. Try "fab puppet.install".' % env.host_string)
 
     # Install local modules
     module_dir = env.get('puppet_module_dir', 'modules/')
@@ -119,22 +117,20 @@ def install_agent():
 
 
 @task
+@requires_puppet
 def apply():
     """
     Apply puppet locally
     """
-    if not has_puppet_installed():
-        abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
 
     sudo('HOME=/root puppet apply /etc/puppet/manifests/site.pp')
 
 
 @task
+@requires_puppet
 def force():
     """
     Force puppet agent run
     """
-    if not has_puppet_installed():
-        abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
 
     sudo('HOME=/root puppet agent --onetime --no-daemonize --verbose --waitforcert 5')
