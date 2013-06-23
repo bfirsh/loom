@@ -5,17 +5,6 @@ from loom.puppet import generate_site_pp, get_puppetmaster_host
 from mock import patch
 
 
-with describe('generate_site_pp'):
-    def it_creates_an_include_statement_for_each_role():
-        env.roledefs = {
-            'app': 'server.example.com',
-            'db': 'server.example.com',
-        }
-        env.host_string = 'server.example.com'
-        site_pp = generate_site_pp()
-        assert 'include "roles::app"' in site_pp
-        assert 'include "roles::db"' in site_pp
-
 with describe('get_puppetmaster_host'):
     def it_get_puppetmaster_from_env_single_host():
         newenv = {'puppetmaster_host': 'master.example.com'}
