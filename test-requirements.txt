@@ -1,0 +1,2 @@
+-e git+http://github.com/bfirsh/pspec.git@a5a973792121008b85007e1028ec10d1ce0e1ead#egg=pspec-dev
+mock==1.0.1
