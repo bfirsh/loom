@@ -2,14 +2,12 @@ from fabric.api import env, abort, put, cd, sudo, task, settings, hide, show, ex
 from fabric.contrib.files import upload_template
 from StringIO import StringIO
 import os
-from .config import current_roles, has_puppet_installed
+from .config import current_roles, has_puppet_installed, has_librarian_installed
+from .decorators import requires_puppet
 from .tasks import restart
 from .utils import upload_dir
 
 __all__ = ['update', 'update_configs', 'install', 'install_master', 'install_agent', 'apply', 'force']
-
-env.loom_puppet_version = '3.1.1'
-env.loom_librarian_version = '0.9.9'
 
 files_path = os.path.join(os.path.dirname(__file__), 'files')
 
@@ -30,14 +28,13 @@ def generate_site_pp():
 
 
 @task
+@requires_puppet
 def update():
     """
     Upload puppet modules
     """
     if not current_roles():
         abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
-    if not has_puppet_installed():
-        abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
 
     # Install local modules
     module_dir = env.get('puppet_module_dir', 'modules/')
@@ -86,8 +83,16 @@ def install():
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
     sudo('apt-get -y install rubygems git')
-    sudo('gem install puppet -v %s --no-ri --no-rdoc' % env.get('loom_puppet_version'))
-    sudo('gem install librarian-puppet -v %s --no-ri --no-rdoc' % env.get('loom_librarian_version'))
+
+    def _gem_install(gem, version=None):
+        version = '-v {version}'.format(version=version) if version else ''
+        return 'gem install {gem} {version} --no-ri --no-rdoc'.format(gem=gem, version=version)
+
+    puppet_version = env.get('loom_puppet_version')
+    sudo(_gem_install('puppet', version=puppet_version))
+
+    librarian_version = env.get('loom_librarian_version')
+    sudo(_gem_install('librarian-puppet', version=librarian_version))
 
     # http://docs.puppetlabs.com/guides/installation.html
     sudo('puppet resource group puppet ensure=present')
@@ -117,22 +122,20 @@ def install_agent():
 
 
 @task
+@requires_puppet
 def apply():
     """
     Apply puppet locally
     """
-    if not has_puppet_installed():
-        abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
 
     sudo('HOME=/root puppet apply /etc/puppet/manifests/site.pp')
 
 
 @task
+@requires_puppet
 def force():
     """
     Force puppet agent run
     """
-    if not has_puppet_installed():
-        abort('Host "%s" does not have puppet installed. Try "fab puppet.install".' % env.host_string)
 
     sudo('HOME=/root puppet agent --onetime --no-daemonize --verbose --waitforcert 5')

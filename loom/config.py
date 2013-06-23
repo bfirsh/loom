@@ -9,6 +9,14 @@ env.environment = 'prod'
 # Default puppet module directory
 env.puppet_module_dir = 'modules/'
 
+# Default puppet version
+# If loom_puppet_version is None, loom installs the latest version
+env.loom_puppet_version = '3.1.1'
+
+# Default librarian version
+# If loom_librarian_version is None, loom installs the latest version
+env.loom_librarian_version = '0.9.9'
+
 # Default puppet base class to be included on all site.pp. Example: roles::base
 env.loom_puppet_base_class = None
 
