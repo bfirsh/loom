@@ -1,2 +1,2 @@
-pspec
-mock
+pspec==0.0.2
+mock==1.0.1
