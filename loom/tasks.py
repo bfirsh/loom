@@ -9,11 +9,11 @@ def all():
     """
     Select all hosts
     """
-    env.hosts = []
+    host_set = set()
     for hosts in env.roledefs.values():
-        env.hosts.extend(hosts)
+        host_set.update(hosts)
     # remove dupes
-    env.hosts = list(set(env.hosts))
+    env.hosts = list(host_set)
 
 @task
 def uptime():
