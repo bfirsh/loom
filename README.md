@@ -130,4 +130,4 @@ Contributors
  * [Ben Firshman](https://fir.sh)
  * [Andreas Jansson](http://andreas.jansson.me.uk/)
  * [Steffen L. Norgren](http://github.com/xironix)
- * [Spencer Herzberg](https://github.com/whelmingbytes)
+ * [Spencer Herzberg](https://github.com/sherzberg)
