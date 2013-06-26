@@ -1,4 +1,5 @@
 from fabric.api import *
+from fabric.network import parse_host_string
 import subprocess
 
 __all__ = ['ssh', 'all', 'uptime', 'upgrade', 'restart', 'reboot']
@@ -38,7 +39,11 @@ def ssh(*cmd):
     run = ['ssh', '-A', '-t']
     if env.key_filename:
         run.extend(["-i", env.key_filename])
-    run.append('%s@%s' % (env.user, env.host_string))
+    parsed = parse_host_string(env.host_string)
+    if parsed['port']:
+        run.extend(['-p', parsed['port']])
+    user = parsed['user'] if parsed['user'] else env.user
+    run.append('%s@%s' % (parsed['user'] if parsed['user'] else env.user, parsed['host']))
     run += cmd
     subprocess.call(run)
 
