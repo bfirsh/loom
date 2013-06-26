@@ -20,7 +20,7 @@ def get_puppetmaster_host():
 
 
 def generate_site_pp():
-    site = ''.join('include "roles::%s"\n' % role for role in current_roles())
+    site = ''.join('include "roles::%s"\n' % role for role in sorted(current_roles()))
     return site
 
 
