@@ -19,13 +19,16 @@ def uptime():
     run('uptime')
 
 @task
-def upgrade():
+def upgrade(non_interactive=False):
     """
     Upgrade apt packages
     """
     with settings(hide('stdout'), show('running')):
         sudo('apt-get update')
-    sudo("apt-get upgrade")
+    upgrade_command = ['apt-get', 'upgrade']
+    if non_interactive:
+        upgrade_command.append('-y')
+    sudo(' '.join(upgrade_command))
 
 @task
 def ssh(*cmd):
