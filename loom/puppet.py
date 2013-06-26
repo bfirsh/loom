@@ -20,10 +20,7 @@ def get_puppetmaster_host():
 
 
 def generate_site_pp():
-    site = ''
-    if env.loom_puppet_base_class:
-        site += 'include "{base}"\n'.format(base=env.loom_puppet_base_class)
-    site += ''.join('include "roles::%s"\n' % role for role in current_roles())
+    site = ''.join('include "roles::%s"\n' % role for role in current_roles())
     return site
 
 
