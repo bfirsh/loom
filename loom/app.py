@@ -15,9 +15,9 @@ __all__ = ['deploy', 'build', 'upload']
 #
 # Example:
 #
+# env.app_root = "/apps"
 # env.apps['api'] = {
 #   "repo": "https://user:pass@github.com/mycompany/mycompany-api.git",
-#   "root": "/apps"
 #   "role": "api",
 #   "build": "script/build",
 #   "init": "api",
