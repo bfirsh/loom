@@ -81,6 +81,11 @@ def upload(app):
     # Upload new code
     upload_dir('build/%s/*' % app, current, use_sudo=True)
 
+    # Run post-upload
+    if env.apps[app].get('post-upload'):
+        with cd(current):
+            sudo(env.apps[app].get('post-upload'))
+
     # Swap!
     sudo('ln -sfn "%s" "%s"' % (current, symlink))
 

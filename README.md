@@ -77,6 +77,7 @@ Apps in Loom are configured using `env.apps`. It is a dictionary where the key i
   - **repo** (required): A Git URL of the repo that contains your app.
   - **role** (required): The role that the app will be uploaded to.
   - **build**: A script to run locally before uploading (e.g. to build static assets or install local dependencies).
+  - **post-upload**: A script to run on each server after uploading.
   - **init**: The name of the Upstart script to start/restart after uploading.
 
 You must also define a directory for your apps to live in with `env.app_root`.
