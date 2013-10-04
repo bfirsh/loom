@@ -1,4 +1,4 @@
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 
 # ensure env variables are set first before overrides
 from . import config
