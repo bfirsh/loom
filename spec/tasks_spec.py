@@ -38,6 +38,16 @@ with describe('loom.tasks.ssh'):
         assert mock.call.call_args_list == expected
 
     @patch('loom.tasks.subprocess')
+    def it_calls_ssh_with_a_key_filename_list(mock):
+        env.user = 'user'
+        env.host_string = 'example.com'
+        env.key_filename = ['test.pem']
+        ssh()
+
+        expected = [call('ssh -A -t -i test.pem user@example.com'.split())]
+        assert mock.call.call_args_list == expected
+
+    @patch('loom.tasks.subprocess')
     def it_calls_ssh_with_a_complex_host(mock):
         env.host_string = 'test@example.com:9999'
         env.key_filename = None

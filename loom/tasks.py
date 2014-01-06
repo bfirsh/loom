@@ -38,7 +38,10 @@ def ssh(*cmd):
     """
     run = ['ssh', '-A', '-t']
     if env.key_filename:
-        run.extend(["-i", env.key_filename])
+        if isinstance(env.key_filename, list):
+            run.extend(["-i", env.key_filename[0]])
+        else:
+            run.extend(["-i", env.key_filename])
     parsed = parse_host_string(env.host_string)
     if parsed['port']:
         run.extend(['-p', parsed['port']])
