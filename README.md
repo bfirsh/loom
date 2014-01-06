@@ -126,6 +126,12 @@ API
 
 Look at the source for now. It's all Fabric tasks, and they're pretty easy to read. (Sorry.)
 
+Running the tests
+-----------------
+
+    $ pip install -r dev-requirements.txt
+    $ script/test
+
 Contributors
 ------------
  * [Ben Firshman](https://fir.sh)
