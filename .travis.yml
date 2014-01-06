@@ -4,4 +4,10 @@ python:
   - "2.7"
 before_script: pip install -r dev-requirements.txt
 script: pspec spec
-
+deploy: 
+  provider: pypi
+  on: 
+    tags: true
+  user: loom
+  password: 
+    secure: A1XF+EBqcw7iukDxmBwZHxdJhwteZV4Wyq5t4KEY81KdszNhzjZH95dbeFlE9KdKNDOVVof4/U3C7Tkjg5/SPdi3gJsfIz5Y/DJCxUYxy+isB5HoWetJ3RQw4fOU01osHBhYurzDNLDr9xWu6VQgDcAsPH2jwetfqg/sMhqtw3g=
