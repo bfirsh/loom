@@ -8,6 +8,7 @@ deploy:
   provider: pypi
   on: 
     tags: true
+    repo: bfirsh/loom
   user: loom
   password: 
     secure: A1XF+EBqcw7iukDxmBwZHxdJhwteZV4Wyq5t4KEY81KdszNhzjZH95dbeFlE9KdKNDOVVof4/U3C7Tkjg5/SPdi3gJsfIz5Y/DJCxUYxy+isB5HoWetJ3RQw4fOU01osHBhYurzDNLDr9xWu6VQgDcAsPH2jwetfqg/sMhqtw3g=
