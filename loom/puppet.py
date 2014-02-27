@@ -1,4 +1,4 @@
-from fabric.api import env, abort, put, cd, sudo, task, settings, hide, show, execute
+from fabric.api import env, abort, put, cd, sudo, task, execute
 from fabric.contrib.files import upload_template
 from StringIO import StringIO
 import os
@@ -80,9 +80,8 @@ def install():
     """
     Install Puppet and its configs without any agent or master.
     """
-    with settings(hide('stdout'), show('running')):
-        sudo('apt-get update')
-    sudo('apt-get -y install rubygems git')
+    sudo('apt-get update -qq')
+    sudo('apt-get -y -q install rubygems git')
 
     puppet_version = env.get('loom_puppet_version')
     sudo(_gem_install('puppet', version=puppet_version))
