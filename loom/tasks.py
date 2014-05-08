@@ -45,6 +45,8 @@ def ssh(*cmd):
     parsed = parse_host_string(env.host_string)
     if parsed['port']:
         run.extend(['-p', parsed['port']])
+    else:
+        run.extend(['-p', unicode(env.port)])
     user = parsed['user'] if parsed['user'] else env.user
     run.append('%s@%s' % (parsed['user'] if parsed['user'] else env.user, parsed['host']))
     run += cmd
