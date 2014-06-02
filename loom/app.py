@@ -101,7 +101,6 @@ def upload(app, version):
     Upload the code for a version
     """
     all_versions_path = os.path.join(env.app_root, app+'-versions')
-    current_version_path = _current_version_path(app)
     version_path = os.path.join(all_versions_path, version)
 
     if not exists(all_versions_path):
@@ -109,6 +108,7 @@ def upload(app, version):
 
     # Copy existing code if it exists
     if exists(os.path.join(env.app_root, app)):
+        current_version_path = _current_version_path(app)
         sudo('cp -a "%s" "%s"' % (current_version_path, version_path))
 
     # Upload new code
